@@ -1,9 +1,8 @@
-package testexamples
+package main
 
 /*
   #include "hello.c"
 */
-
 import "C"
 import (
 	"errors"
