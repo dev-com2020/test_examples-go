@@ -1,25 +1,37 @@
 package main
 
-/*
-  #include "hello.c"
-*/
-import "C"
 import (
-	"errors"
-	"log"
+	"fmt"
+	"math/rand"
+	"time"
 )
 
-func main() {
-	err := Hello()
-	if err != nil {
-		log.Fatal(err)
-	}
+// the boring function return a channel to communicate with it.
+func boring(msg string, quit chan string) <-chan string { // <-chan string means receives-only channel of string.
+	c := make(chan string)
+	go func() { // we launch goroutine inside a function.
+		for i := 0; ; i++ {
+			select {
+			case c <- fmt.Sprintf("%s %d", msg, i):
+				// do nothing
+			case <-quit:
+				fmt.Println("clean up")
+				quit <- "See you!"
+				return
+			}
+			time.Sleep(time.Duration(rand.Intn(1e3)) * time.Millisecond)
+		}
+
+	}()
+	return c // return a channel to caller
 }
 
-func Hello() error {
-	_, err := C.Hello()
-	if err != nil {
-		return errors.New("blad z funkcji" + err.Error())
+func main() {
+	quit := make(chan string)
+	c := boring("Joe", quit)
+	for i := 3; i >= 0; i-- {
+		fmt.Println(<-c)
 	}
-	return nil
+	quit <- "Koniec"
+	fmt.Println("Joe say:", <-quit)
 }

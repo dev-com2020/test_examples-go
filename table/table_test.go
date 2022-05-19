@@ -47,6 +47,8 @@ func TestDoMathTable(t *testing.T) {
 		{"multiplication", 2, 2, "*", 4, ""},
 		{"division", 2, 2, "/", 1, ""},
 		{"bad_division", 2, 0, "/", 0, `division by zero`},
+		{"bad_op", 2, 2, "?", 0, `nieznany op ?`},
+		// {"another_multiplication", 2, 3, "*", 6, ""},
 	}
 	for _, d := range data {
 		t.Run(d.name, func(t *testing.T) {
